@@ -52,18 +52,55 @@ app.get('/api/todos/search', function search(req, res) {
 app.get('/api/todos', function index(req, res) {
   /* This endpoint responds with all of the todos
    */
+
+   res.json({data: todos});
+
 });
 
 app.post('/api/todos', function create(req, res) {
   /* This endpoint will add a todo to our "database"
    * and respond with the newly created todo.
    */
+   // req.body will get the input todo
+   // var newtodo = req.body;
+   // var todoId = req.body;
+   var todoTask = req.body.task;
+   var todoDesc = req.body.description;
+   var lastObj = todos[todos.length - 1];
+   var nextId = lastObj._id + 1;
+
+   var newObject = {_id: nextId, task: todoTask, description: todoDesc};
+
+   todos.push(newObject);
+   res.json(newObject);
+
+
 });
+
+// let add = (anArray, objectToAdd /* {name: 'Sam'} */) => {
+//   // get next id by getting last object's id and adding 1
+//   var lastObj = anArray[anArray.length - 1];
+//   var nextId = lastObj.id + 1;
+//
+//   var objectToAddWithId = {
+//     id: nextId,
+//     name: objectToAdd.name // 'Sam'
+//   }
+//
+//   anArray.push(objectToAddWithId)// {id: 3, name: 'Sam'}
+//
+//   return anArray;
+// }
 
 app.get('/api/todos/:id', function show(req, res) {
   /* This endpoint will return a single todo with the
    * id specified in the route parameter (:id)
    */
+   var todoIds = req.params.id;
+   var singleTodo = todos.find(function(todo) {
+     return todo._id == todoIds;
+   })
+   res.json(singleTodo);
 });
 
 app.put('/api/todos/:id', function update(req, res) {
@@ -71,14 +108,50 @@ app.put('/api/todos/:id', function update(req, res) {
    * id specified in the route parameter (:id) and respond
    * with the newly updated todo.
    */
+
+   // find id that's input /api/todos/:id
+   // update req.body object with tast or description or both if it's in req.body
+
+  var todosUpdate = todos.forEach(function(todo) {
+     var todoId = req.params.id;
+     if (todo._id == todoId) {
+       todo.task = req.body.task;
+       todo.description = req.body.description;
+       res.json(todo);
+       // return todo;
+     }
+   })
+
+
 });
+
+// let updateById = (anArray, idToUpdate, objectUpdates) => {
+//   anArray.forEach(function(eachPerson) {
+//     if (eachPerson.id === idToUpdate) {
+//       eachPerson.name = objectUpdates.name;
+//       return eachPerson;
+//     }
+//   });
 
 app.delete('/api/todos/:id', function destroy(req, res) {
   /* This endpoint will delete a single todo with the
    * id specified in the route parameter (:id) and respond
    * with success.
    */
+    var todoId = req.params.id;
+    todos = todos.filter(function(eachObj) {
+       return todoId != eachObj._id;
+     })
+res.json(todos);
 });
+
+// let removeById = (anArray, idToDelete) => {
+//   var remainingObjects = anArray.filter(function(eachObj) {
+//     // return every object where id is not idToDelete
+//     return eachObj.id !== idToDelete;
+//   });
+//   return remainingObjects;
+// }
 
 /**********
  * SERVER *
