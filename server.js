@@ -2,12 +2,25 @@
 var express = require('express'),
     app = express(),
     bodyParser = require('body-parser');
+var mongoose = require('mongoose');
+  Schema = mongoose.Schema;
+
+var TodoSchema = new Schema({
+  task: String,
+  description: String
+});
+
+var Todo = mongoose.model('Todo', TodoSchema);
+
+module.exports = Todo;
 
 // configure bodyParser (for receiving form data)
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // serve static files from public folder
 app.use(express.static(__dirname + '/public'));
+
+
 
 /************
  * DATABASE *
@@ -47,7 +60,15 @@ app.get('/api/todos/search', function search(req, res) {
   /* This endpoint responds with the search results from the
    * query in the request. COMPLETE THIS ENDPOINT LAST.
    */
+   let searchTerm = req.query.q;
+   console.log(searchTerm);
+   let filteredTodos = todos.filter(function(todo) {
+     return(todo.task.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      todo.description.toLowerCase().includes(searchTerm.toLowerCase()));
+   })
+   res.json({data : filteredTodos});
 });
+
 
 app.get('/api/todos', function index(req, res) {
   /* This endpoint responds with all of the todos
